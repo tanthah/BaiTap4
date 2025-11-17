@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Form, Input, Button, message, Card } from "antd";
-import { api } from "../api";
+import { api } from "../../api/api";
 
 export default function ForgotPassword() {
   const [loading, setLoading] = useState(false);
@@ -22,7 +22,7 @@ export default function ForgotPassword() {
 
   return (
     <div style={{ width: 400, margin: "50px auto" }}>
-      <Card title="Quên mật khẩu" bordered={false}>
+      <Card title="Quên mật khẩu" variant="outlined">
         <Form onFinish={onFinish} layout="vertical">
           <Form.Item name="email" label="Email" rules={[{ required: true }]}>
             <Input placeholder="Nhập email" />

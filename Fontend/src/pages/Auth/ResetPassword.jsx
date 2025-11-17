@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Form, Input, Button, message, Card } from "antd";
-import { api } from "../api";
+import { api } from "../../api/api"
 
 export default function ResetPassword() {
   const { token } = useParams();
@@ -25,7 +25,7 @@ export default function ResetPassword() {
 
   return (
     <div style={{ width: 400, margin: "50px auto" }}>
-      <Card title="Đặt lại mật khẩu" bordered={false}>
+      <Card title="Đặt lại mật khẩu" variant="outlined">
         <Form onFinish={onFinish} layout="vertical">
           <Form.Item
             name="password"

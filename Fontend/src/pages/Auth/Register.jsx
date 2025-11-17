@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Form, Input, Button, message, Card } from "antd";
-import { api } from "../api.js";
+import { api } from "../../api/api"
 
 export default function Register() {
   const [loading, setLoading] = useState(false);
@@ -22,7 +22,7 @@ export default function Register() {
 
   return (
     <div style={{ width: 400, margin: "50px auto" }}>
-      <Card title="Register" bordered={false}>
+      <Card title="Register" variant="outlined">
         <Form onFinish={onFinish} layout="vertical">
           
           <Form.Item name="name" label="Tên người dùng" rules={[{ required: true }]}>
