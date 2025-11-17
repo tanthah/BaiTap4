@@ -1,0 +1,21 @@
+{
+  "name": "fontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "react-router-dom": "^7.9.6",
+    "axios": "^1.13.2",
+    "antd": "^5.28.1"
+  },
+  "devDependencies": {
+    "vite": "^5.2.0",
+    "@vitejs/plugin-react": "^4.2.0"
+  }
+}
