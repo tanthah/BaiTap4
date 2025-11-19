@@ -1,7 +1,12 @@
-import { registerService, forgotPasswordService, resetPasswordService } from "../services/authService.js";
+import { registerService, loginService, forgotPasswordService, resetPasswordService } from "../services/authService.js";
 
 export const register = async (req, res) => {
   const result = await registerService(req.body);
+  return res.json(result);
+};
+
+export const login = async (req, res) => {
+  const result = await loginService(req.body);
   return res.json(result);
 };
 

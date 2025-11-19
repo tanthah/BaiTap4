@@ -2,6 +2,9 @@
 //register service
 import bcrypt from "bcrypt";
 import User from "../models/User.js";
+import jwt from "jsonwebtoken";
+import crypto from "crypto";
+import nodemailer from "nodemailer";
 
 export const registerService = async (data) => {
   const { name, email, password } = data;
@@ -22,11 +25,38 @@ export const registerService = async (data) => {
 
 
 
+// Login service
+export const loginService = async (data) => {
+  const { email, password } = data;
+
+  const user = await User.findOne({ email });
+  if (!user) return { status: false, message: "Email hoặc mật khẩu không đúng" };
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) return { status: false, message: "Email hoặc mật khẩu không đúng" };
+
+  const token = jwt.sign(
+    { id: user._id, email: user.email, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" }
+  );
+
+  return {
+    status: true,
+    message: "Đăng nhập thành công",
+    token,
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    },
+  };
+};
+
+
 
 //forgot password guiwr mail taoj token
-
-import crypto from "crypto";
-import nodemailer from "nodemailer";
 
 export const forgotPasswordService = async (email) => {
   const user = await User.findOne({ email });
