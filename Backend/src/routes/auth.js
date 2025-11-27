@@ -5,6 +5,47 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const sendEmail = require('../utils/sendEmail');
 
+
+
+
+// @route   POST /api/auth/login
+// @desc    Đăng nhập
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Kiểm tra user tồn tại
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'Email không tồn tại' });
+    }
+
+    // Kiểm tra mật khẩu
+    const isMatch = await user.matchPassword(password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Mật khẩu không đúng' });
+    }
+
+    // Tạo token JWT
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: '30d',
+    });
+
+    res.status(200).json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
 // @route   POST /api/auth/register
 // @desc    Đăng ký người dùng mới
 router.post('/register', async (req, res) => {
@@ -90,7 +131,7 @@ router.post('/forgot-password', async (req, res) => {
     const message = `
       <h1>Bạn đã yêu cầu đặt lại mật khẩu</h1>
       <p>Vui lòng click vào link bên dưới để đặt lại mật khẩu:</p>
-      <a href="${resetUrl}" clicktracking=off>${resetUrl}</a>
+      <a href="${resetUrl}" clicktracking="off">${resetUrl}</a>
       <p>Link này sẽ hết hiệu lực sau 10 phút.</p>
       <p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>
     `;
@@ -110,6 +151,9 @@ router.post('/forgot-password', async (req, res) => {
       user.resetPasswordToken = undefined;
       user.resetPasswordExpire = undefined;
       await user.save();
+
+      
+
 
       return res.status(500).json({ message: 'Không thể gửi email' });
     }
