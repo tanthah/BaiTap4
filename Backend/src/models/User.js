@@ -30,11 +30,18 @@ const userSchema = new mongoose.Schema({
 
 // Mã hóa mật khẩu trước khi lưu
 userSchema.pre('save', async function (next) {
+  // Chỉ hash password nếu password được modify
   if (!this.isModified('password')) {
-    next();
+    return;
   }
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
+  
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    return;
+  } catch (error) {
+    return error;
+  }
 });
 
 // So sánh mật khẩu

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Card, Button, Alert, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom'
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -140,7 +141,9 @@ const Dashboard = () => {
                 <Button variant="outline-secondary">
                   <i className="bi bi-person-fill"></i> Chỉnh sửa hồ sơ
                 </Button>
-                <Button variant="outline-primary">
+                <Button variant="outline-primary"
+                  as={Link}
+                  to="/forgot-password">
                   <i className="bi bi-key-fill"></i> Đổi mật khẩu
                 </Button>
               </div>

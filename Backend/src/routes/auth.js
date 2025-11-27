@@ -17,6 +17,7 @@ router.post('/login', async (req, res) => {
     // Kiểm tra user tồn tại
     const user = await User.findOne({ email });
     if (!user) {
+      console.log('Login attempt with non-existent email:', email);
       return res.status(404).json({ message: 'Email không tồn tại' });
     }
 
@@ -103,10 +104,11 @@ router.post('/register', async (req, res) => {
 });
 
 // @route   POST /api/auth/forgot-password
-// @desc    Gửi email reset mật khẩu
 router.post('/forgot-password', async (req, res) => {
   try {
     const { email } = req.body;
+    
+    console.log('Received forgot-password request for:', email);
 
     const user = await User.findOne({ email });
     if (!user) {
@@ -116,16 +118,14 @@ router.post('/forgot-password', async (req, res) => {
     // Tạo reset token
     const resetToken = crypto.randomBytes(32).toString('hex');
     
-    // Hash token và lưu vào database
     user.resetPasswordToken = crypto
       .createHash('sha256')
       .update(resetToken)
       .digest('hex');
-    user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 phút
+    user.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
 
     await user.save();
 
-    // Tạo reset URL
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
 
     const message = `
@@ -137,28 +137,37 @@ router.post('/forgot-password', async (req, res) => {
     `;
 
     try {
+      console.log('Attempting to send email to:', user.email);
+      
       await sendEmail({
         email: user.email,
         subject: 'Đặt lại mật khẩu',
         message,
       });
 
+      console.log('Email sent successfully');
+      
       res.status(200).json({ 
         success: true, 
         message: 'Email đã được gửi' 
       });
     } catch (error) {
+      console.error('Error sending email:', error); // Log lỗi chi tiết
+      
       user.resetPasswordToken = undefined;
       user.resetPasswordExpire = undefined;
       await user.save();
 
-      
-
-
-      return res.status(500).json({ message: 'Không thể gửi email' });
+      return res.status(500).json({ 
+        message: 'Không thể gửi email',
+        error: error.message // Trả về lỗi cụ thể
+      });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Server error:', error); // Log lỗi server
+    res.status(500).json({ 
+      message: error.message 
+    });
   }
 });
 
@@ -196,6 +205,7 @@ router.post('/reset-password/:resetToken', async (req, res) => {
       message: 'Mật khẩu đã được đặt lại thành công' 
     });
   } catch (error) {
+    console.log('Error in reset-password:', error);
     res.status(500).json({ message: error.message });
   }
 });
